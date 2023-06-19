@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Hotels avalaibility check
+  description: |-
+    This is the rest definition for the hotels avalaibility search example.
+  contact:
+    email: sergio.roa@outlook.com
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080
+tags:
+  - name: hotels-availability
+    description: Everything about hotels availability
+paths:
+  /search:
+    post:
+      tags:
+        -  hotels-availability
+      summary: Creates a new hotel search request
+      description: Generates a new hotel search request
+      operationId: createSearch
+      requestBody:
+        description: Creates a new hotel search request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchRequestResponse'  
+        '405':
+          description: Validation exception
+  /count:
+    get:
+      tags:
+        -  hotels-availability
+      summary: Finds and count search similar queries
+      description: Finds and count search similar queries
+      operationId: countSearchById
+      parameters:
+        - name: searchId
+          in: query
+          description: Search id to find similar queries for
+          required: true
+          schema:
+            type: string
+            example: "xxxxx"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountRequestResponse'          
+        '405':
+          description: Validation exception
+components:
+  schemas:
+    SearchRequest:
+      required:
+        - hotelId
+        - checkIn
+        - checkOut
+        - ages
+      type: object
+      properties:
+        hotelId:
+          type: string
+          description: "Hotel Id to search for"
+          example: "1234aBc"
+        checkIn:
+          type: string
+          description: "Check in dates for the given hotel search request"
+          example: "29/12/2023"
+        checkOut:
+          type: string
+          description: "Check out dates for the given hotel search request"
+          example: "31/12/2023"
+        ages:
+          type: array
+          description: "Ages given hotel search request"
+          items:
+            example: [30, 29, 1, 3]
+    SearchRequestResponse:
+      required:
+        - searchId
+      type: object
+      properties:
+        searchId:
+          type: string
+          example: "xxxxx"
+    CountRequestResponse:
+      required:
+        - hotelId
+        - checkIn
+        - checkOut
+        - ages
+      type: object
+      properties:
+        searchId:
+          type: string
+          description: "Search id of the request"
+          example: "1234aBc"
+        search:
+          type: object
+          properties:
+            hotelId:
+              type: string
+              description: "Hotel Id to search for"
+              example: "1234aBc"
+            checkIn:
+              type: string
+              description: "Check in dates for the given hotel search request"
+              example: "29/12/2023"
+            checkOut:
+              type: string
+              description: "Check out dates for the given hotel search request"
+              example: "31/12/2023"
+            ages:
+              type: array
+              description: "Ages given hotel search request"
+              items:
+                type: integer
+                example: [30, 29, 1, 3]
+        count:
+          type: integer
+          description: "Count of similar searches"
+          example: 100
+  requestBodies:
+    Search:
+      description: Search to be requested
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchRequest'

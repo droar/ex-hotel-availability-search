@@ -1,0 +1,53 @@
+version: '3.1'
+
+#Simple docker compose for running kafka, zookeper and postgresql
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: c_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '22181:2181'
+    volumes:
+      - vol_kafka:/home/node/app
+    networks:
+      - nwk_default
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: c_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - '29092:29092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - vol_kafka:/home/node/app
+    networks:
+      - nwk_default
+  postgresql:
+    image: postgres:14.1-alpine
+    container_name: c_postgresql
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - vol_postgresql:/var/lib/postgresql/data
+      - ./sql/schema-generation.sql:/docker-entrypoint-initdb.d/schema-generation.sql
+    networks:
+      - nwk_default
+volumes:
+  vol_kafka:
+  vol_postgresql:
+networks:
+  nwk_default:
