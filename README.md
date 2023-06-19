@@ -3,7 +3,7 @@ a CQRS concern separation.** Both projects use Springboot 3.0.6 and Java 17.
 
 **The project solution architecture proposed is the following:**
 
-![](.\docs\example_arq_diagram.png)
+![](docs/example_arq_diagram.png)
 
 **Note**: In this case PostgreSQL due to the requirement of querying `similar` matches).
 
